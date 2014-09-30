@@ -14,7 +14,7 @@ Essentially, grid[0 - 31] represent the first row, grid[32 - 63] represent the s
 
 Secondly, there is a difference between Points and Pairs. Points are cells on the game board, Pairs are two Points logically grouped together. So in a movePair mp, mp.x is one of the points, and mp.y is another. if mp.x and mp.y satisfy the constraints of our p and q values, then validateMove(mp) will return true. Furthermore, validateMove(mp) will only return true if mp.x.value = mp.x.value (this is the same as saying you can only pair up two cells that have the same number of coins).
 
-This solutions totally works at this point, and can totally crush the dummy player. However, one bug I'm still working on is getting the player to make all available moves at the end of the game. As of now, the simulator warns me that there are still valid moves to be made, but the player isn't making them. I'll try to work this out tomorrow.
+This solutions totally works at this point, and can crush the dummy player. However, one small bug I've observed and am still working on understading is this: at the very end of the game, the simulator sometimes complains that our player has valid moves left, but is not making them. Not totally sure what the issue is, and it seems to not be affecting our player until the last 5 - 10 turns, but I'll try to work it out tomorrow.
 
 
 
