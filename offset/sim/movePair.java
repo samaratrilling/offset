@@ -4,7 +4,7 @@ import offset.sim.movePair;
 
 public class movePair {
 
-	public boolean move;
+	  public boolean move;
     public Point x;
     public Point y;
 
