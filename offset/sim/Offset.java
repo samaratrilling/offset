@@ -43,7 +43,7 @@ public class Offset
     // default parameters
     static int MAX_TICKS = 10000;
     static int size =32;
-    static private Point[] grid = new Point[size*size];
+    static private Point[] grid = new Point[size * size];
     
     static Player player0;
     static Player player1;
