@@ -27,8 +27,8 @@ public class Player extends offset.sim.Player {
 
     // initialize the grid, p, and q at the class level so we don't have to
     // pass them as parameters to helper functions
-    p = pr.x;
-    q = pr.y;
+    p = pr.p;
+    q = pr.q;
     grid = initGrid;
 
     // the movePair that will eventually be returned
@@ -75,7 +75,7 @@ public class Player extends offset.sim.Player {
     for (int i = 0; i < 8; i++) {
 
       movePair tmpPair = new movePair();
-      tmpPair.x = origin;
+      tmpPair.src = origin;
       int nRow;
       int nCol;
 
@@ -107,7 +107,7 @@ public class Player extends offset.sim.Player {
     
       // take the first valid move
       if (nRow >= 0 && nRow < 32 && nCol >= 0 && nCol < 32) {
-        tmpPair.y = accessGrid(nRow, nCol);
+        tmpPair.target = accessGrid(nRow, nCol);
 
         if (validateMove(tmpPair)) {
           optimalPair = tmpPair;
@@ -133,8 +133,8 @@ public class Player extends offset.sim.Player {
     for (int i = 0; i < 8; i++) {
 
       movePair tmpPair = new movePair();
-      tmpPair.x = origin;
-      tmpPair.y = null;
+      tmpPair.src = origin;
+      tmpPair.target = null;
       
       int nRow;
       int nCol;
@@ -166,10 +166,10 @@ public class Player extends offset.sim.Player {
       }
 
       if (nRow >= 0 && nRow < 32 && nCol >= 0 && nCol < 32)
-        tmpPair.y = accessGrid(nRow, nCol);
+        tmpPair.target = accessGrid(nRow, nCol);
 
       // if any of these moves are valid, we're good
-      if (tmpPair.y != null && validateMove(tmpPair)) {
+      if (tmpPair.target != null && validateMove(tmpPair)) {
         optimalPair = tmpPair;
         break;
       }
@@ -194,8 +194,8 @@ public class Player extends offset.sim.Player {
    */
   boolean validateMove(movePair movepr) {
     	
-  	Point src = movepr.x;
-  	Point target = movepr.y;
+  	Point src = movepr.src;
+  	Point target = movepr.target;
   	boolean rightposition = false;
   	if (Math.abs(target.x - src.x) == Math.abs(p) && Math.abs(target.y - src.y) == Math.abs(q)) {
   		rightposition = true;
