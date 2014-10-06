@@ -163,9 +163,9 @@ public class Player extends offset.sim.Player {
   	int fewestCompetitorMoves = Integer.MAX_VALUE;
 
     ArrayList<movePair> possibleMoves = possibleMoves(grid, pr);
-    System.out.println("number of my possible moves: " + possibleMoves.size());
+    System.out.println("my possible moves: " + possibleMoves.size());
     ArrayList<movePair> opponentMoves = possibleMoves(grid, pr0);
-    System.out.println("number of my opponent possible moves: " + opponentMoves.size());
+    System.out.println("opponent's possible moves: " + opponentMoves.size());
 
   	for (movePair mp : possibleMoves) {
   		Point[] newGrid = applyMoveToGrid(grid, mp, this.id);
@@ -180,7 +180,6 @@ public class Player extends offset.sim.Player {
           break;
   		} 
   	}
-  	System.out.println("fewest moves: " + fewestCompetitorMoves);
   	return nextMove;
   }
   
