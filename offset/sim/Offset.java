@@ -467,7 +467,6 @@ public class Offset
         	currentPr = p1;
         	currentplayer =1;
         }
-        //System.out.println(next.move);
         if (next.move) {
         if (validateMove(next, currentPr)) {
         	writer.printf("(%d, %b, (%d, %d), (%d, %d), %d)\n", currentplayer, next.move, next.src.x, next.src.y, next.target.x, next.target.y, next.src.value*2);
@@ -566,6 +565,8 @@ public class Offset
 		writer = new PrintWriter(output, "UTF-8");
         Offset game = new Offset();
         game.init();
+        //p0 = new Pair(3, 4);
+        //p1 = new Pair(2, 5);
         p0=randomPair(d);
         p1=randomPair(d);
         while (p0.p==p1.p || p0.q == p1.p) {

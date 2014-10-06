@@ -30,10 +30,10 @@ public class Player extends offset.sim.Player {
 		super(prin, idin);
 
     // write training files for Sameer
-    f1 = new File("x.txt");
-    f2 = new File("y.txt");
-    writer1 = new PrintWriter(f1);
-    writer2 = new PrintWriter(f2);
+    // f1 = new File("x.txt");
+    // f2 = new File("y.txt");
+    // writer1 = new PrintWriter(f1);
+    // writer2 = new PrintWriter(f2);
 
 		// TODO Auto-generated constructor stub
 	}
@@ -54,7 +54,7 @@ public class Player extends offset.sim.Player {
     grid = initGrid;
 
     // log moves for sameer
-    logPossibleOpponentMoves();
+    // logPossibleOpponentMoves();
 
     movePair nextMove = oneLevelMove(grid, pr, pr0);
 
@@ -163,7 +163,9 @@ public class Player extends offset.sim.Player {
   	int fewestCompetitorMoves = Integer.MAX_VALUE;
 
     ArrayList<movePair> possibleMoves = possibleMoves(grid, pr);
-    System.out.println("number of possible moves: " + possibleMoves.size());
+    System.out.println("number of my possible moves: " + possibleMoves.size());
+    ArrayList<movePair> opponentMoves = possibleMoves(grid, pr0);
+    System.out.println("number of my opponent possible moves: " + opponentMoves.size());
 
   	for (movePair mp : possibleMoves) {
   		Point[] newGrid = applyMoveToGrid(grid, mp, this.id);
@@ -172,32 +174,19 @@ public class Player extends offset.sim.Player {
   			fewestCompetitorMoves = possibleOpponentMoves.size();
   			nextMove = mp;
   			nextMove.move = true;
+        // if we can decrease our opponent moves by 64 (the practical maximum),
+        // we break
+        if (opponentMoves.size() - possibleOpponentMoves.size() == 64)
+          break;
   		} 
   	}
   	System.out.println("fewest moves: " + fewestCompetitorMoves);
   	return nextMove;
   }
-
   
-  //public movePair twoLevelMove(Point[] grid, Pair pr, Pair, pr0) {
-  //  movePair nextMove = null;
-  //  int fewestCompetitorMoves = Integer.MAX_VALUE;
-  //  int fewestPlayerMoves = Integer.MAX_VALUE;
-  //  for (movePair mp : possibleMoves(grid, pr)) {
-  //    Point[] newGrid = applyMoveToGrid(grid, mp, this.id);
-  //    ArrayList<movePair> possibleOpponentMoves = possibleMoves(newGrid, pr0);
-  //    for (movePair op : possibleOpponentMoves) {
-  //      Point[] twoLevelGrid = applyMoveToGrid(newGrid, op, opp_id);
-  //      nextMove = oneLevelMove(twoLevelGrid, pr, pr0);
-  //      ArrayList<movePair> twoLevelMoves = possibleMoves(twoLevelGrid, pr) 
-  //      for (movePair twoLevelMove : twoLevelMoves) {
-  //        Point[] finalGrid = applyMoveToGrid(twoLevelGrid, twoLevelMove, this.id);
-  //        ArrayList<movePair> finalOpponentMoves = possibleMoves(finalGrid, pr0);
-  //      }
-  //    }
-  //  }
-  //}
-
+  /**
+   * This method is broken at the moment -- avoid using it
+   */
   public movePair nLevelMove(Point[] grid, Pair pr, Pair pr0, int depth) {
   	movePair nextMove = new movePair();
   	movePair oppMove = new movePair();
@@ -234,135 +223,6 @@ public class Player extends offset.sim.Player {
     nextMove.target = pointAtGridIndex(grid, nextMove.target.x, nextMove.target.y);
 
     return nextMove;
-  }
-
-  /**
-   * Given an origin point, this method returns the first available valid move
-   * Note that this method assumes that there IS a valid move from this point
-   */
-  public movePair returnValidMove(Point origin) {
-
-    int oRow = origin.x;
-    int oCol = origin.y;
-
-    movePair optimalPair = new movePair();
-
-    // there are 8 moves in the perfect case for any given point on the board
-    for (int i = 0; i < 8; i++) {
-
-      movePair tmpPair = new movePair();
-      tmpPair.src = origin;
-      int nRow;
-      int nCol;
-
-      if (i == 0) {
-        nRow = oRow - p;
-        nCol = oCol - q;
-      } else if (i == 1) {
-        nRow = oRow - p;
-        nCol = oCol + q;
-      } else if (i == 2) {
-        nRow = oRow + p;
-        nCol = oCol - q;
-      } else if (i == 3) {
-        nRow = oRow + p;
-        nCol = oCol + q;
-      } else if (i == 4) {
-        nRow = oRow - q;
-        nCol = oCol - p;
-      } else if (i == 5) {
-        nRow = oRow - q;
-        nCol = oCol + p;
-      } else if (i == 6) {
-        nRow = oRow + q;
-        nCol = oCol - p;
-      } else {
-        nRow = oRow + q;
-        nCol = oCol + p;
-      }
-    
-      // take the first valid move
-      if (nRow >= 0 && nRow < 32 && nCol >= 0 && nCol < 32) {
-        tmpPair.target = accessGrid(nRow, nCol);
-
-        if (validateMove(tmpPair)) {
-          optimalPair = tmpPair;
-          break;
-        }
-      }
-    }
-    return optimalPair;
-  }
-
-  /**
-   * Given an origin point, this method returns true if a valid move exists off
-   * of the point in any of the 8 directions it can move
-   */
-  public boolean existsValidMove(Point origin) {
-
-    int oRow = origin.x;
-    int oCol = origin.y;
-
-    movePair optimalPair = null;
-
-    // there are 8 moves in the perfect case for any given point on the board
-    for (int i = 0; i < 8; i++) {
-
-      movePair tmpPair = new movePair();
-      tmpPair.src = origin;
-      tmpPair.target = null;
-      
-      int nRow;
-      int nCol;
-
-      if (i == 0) {
-        nRow = oRow - p;
-        nCol = oCol - q;
-      } else if (i == 1) {
-        nRow = oRow - p;
-        nCol = oCol + q;
-      } else if (i == 2) {
-        nRow = oRow + p;
-        nCol = oCol - q;
-      } else if (i == 3) {
-        nRow = oRow + p;
-        nCol = oCol + q;
-      } else if (i == 4) {
-        nRow = oRow - q;
-        nCol = oCol - p;
-      } else if (i == 5) {
-        nRow = oRow - q;
-        nCol = oCol + p;
-      } else if (i == 6) {
-        nRow = oRow + q;
-        nCol = oCol - p;
-      } else {
-        nRow = oRow + q;
-        nCol = oCol + p;
-      }
-
-      if (nRow >= 0 && nRow < 32 && nCol >= 0 && nCol < 32)
-        tmpPair.target = accessGrid(nRow, nCol);
-
-      // if any of these moves are valid, we're good
-      if (tmpPair.target != null && validateMove(tmpPair)) {
-        optimalPair = tmpPair;
-        break;
-      }
-    }
-    if (optimalPair == null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  /**
-   * this method abstracts away some of the confusion surrounding grid's
-   * lack of 2-dimensionality
-   */
-  public Point accessGrid(int row, int column) {
-    return grid[row * size + column];
   }
 
   /**
