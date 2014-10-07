@@ -550,7 +550,13 @@ public class Offset
         String group0 = null;
         String group1 = null;
         String output = null;
+        // extra params for running games to generate ML data
+        int group0p = 0;
+        int group0q = 0;
+        int group1p = 0;
+        int group1q = 0;
         int d = 0;
+        boolean MLMode = false;
         if (args.length > 0)
              d = Integer.parseInt(args[0]);
         if (args.length > 1)
@@ -559,33 +565,64 @@ public class Offset
             group1 = args[2];
         if (args.length >3)
         	output = args[3];
-        
-        // create game
-       
-		writer = new PrintWriter(output, "UTF-8");
-        Offset game = new Offset();
-        game.init();
-        //p0 = new Pair(3, 4);
-        //p1 = new Pair(2, 5);
-        p0=randomPair(d);
-        p1=randomPair(d);
-        while (p0.p==p1.p || p0.q == p1.p) {
-        	p1=randomPair(d);
+        if (args.length > 4)
+          group0p = Integer.parseInt(args[4]);
+        if (args.length > 5)
+          group0q = Integer.parseInt(args[5]);
+        if (args.length > 6)
+          group1p = Integer.parseInt(args[6]);
+        if (args.length > 7) {
+          group1q = Integer.parseInt(args[7]); 
+          MLMode = true;
         }
-        System.out.printf("Pair 1 is (%d, %d)", p0.p, p0.q);
-        System.out.printf("Pair 2 is (%d, %d)", p1.p, p1.q);
-        player0 = loadPlayer(group0, p0, 0);
-        player1 = loadPlayer(group1, p1, 1);
-        // init game
-        
-        // play game
-        //if (gui) {
-            game.playgui();
-       // }
-       // else {
-         //   game.play();
-       // }
-       
+
+        boolean paramsValid = true;
+        // If we're trying to run this in the ML format
+        if (args.length > 7) {
+          // Make sure given ps and qs are valid
+          if (group0p + group0q != d ||
+            group1p + group1q != d) {
+              paramsValid = false;
+              System.out.println("Ps and Qs don't sum to d");
+            }
+          else if (group0p == group1p || group0q == group1p) {
+            paramsValid = false;
+            System.out.println("Ps and Qs are equivalent");
+          }
+        }
+
+        if (paramsValid) {
+
+            // create game
+           
+            writer = new PrintWriter(output, "UTF-8");
+            Offset game = new Offset();
+            game.init();
+            if (MLMode) {
+              p0 = new Pair(3, 4);
+              p1 = new Pair(2, 5);
+            }
+            else {
+              p0=randomPair(d);
+              p1=randomPair(d);
+              while (p0.p==p1.p || p0.q == p1.p) {
+                p1=randomPair(d);
+              }
+            }
+            System.out.printf("Pair 1 is (%d, %d)", p0.p, p0.q);
+            System.out.printf("Pair 2 is (%d, %d)", p1.p, p1.q);
+            player0 = loadPlayer(group0, p0, 0);
+            player1 = loadPlayer(group1, p1, 1);
+            // init game
+            
+            // play game
+            //if (gui) {
+                game.playgui();
+           // }
+           // else {
+             //   game.play();
+           // }
+       } 
     }        
 
     int tick = 0;
