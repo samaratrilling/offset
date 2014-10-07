@@ -599,8 +599,8 @@ public class Offset
             Offset game = new Offset();
             game.init();
             if (MLMode) {
-              p0 = new Pair(3, 4);
-              p1 = new Pair(2, 5);
+              p0 = new Pair(group0p, group0q);
+              p1 = new Pair(group1p, group1q);
             }
             else {
               p0=randomPair(d);
