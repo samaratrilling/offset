@@ -1,0 +1,13 @@
+java offset.sim.Offset 5 move_counter group3 output1
+    move_counter = 534
+    group3 = 410
+
+(move_counter wins by an even larger margin for d = 9)
+
+java offset.sim.Offset 9 group3 move_counter output1
+    group3 = 374
+    move_counter = 446 
+
+java offset.sim.Offset 11 group3 move_counter output1
+    group3 = 340
+    move_counter = 524
