@@ -53,10 +53,14 @@ public class Offset
     static int usedP = 0;
     //static FileOutputStream out;
     static PrintWriter writer;
+    static PrintWriter dataWriter;
     static ArrayList<ArrayList> history = new ArrayList<ArrayList>();
     static boolean nomoveend = false;
     static int nomoveid = 100;
-    
+    // Machine learning mode - can control p,q.
+    // Prints board state every tick to file
+    static boolean MLMode = false;
+
 	// list files below a certain directory
 	// can filter those having a specific extension constraint
     //
@@ -477,6 +481,13 @@ public class Offset
         	history.add(record);
         	update(next, currentplayer);
         	//pairPrint(next);
+
+          // Print the board state to the data file
+          if (MLMode) {
+              System.out.println("Printing board");
+              printBoard(dataWriter, grid);
+            // Print the number of moves associated with this grid
+          }
         }
         else {
         	System.out.println("[ERROR] Invalid move, let the player stay.");
@@ -490,10 +501,30 @@ public class Offset
         	else {
         		nomoveend = true;
         		nomoveid = currentplayer;
-        		System.err.printf("Player %d still have valid movie, but it gives up", currentplayer);
+        		System.err.printf("Player %d still have valid move, but it gives up", currentplayer);
         	}
         }
         
+    }
+
+    void printBoard(PrintWriter dataWriter, Point[] grid) {
+        int col = 0;
+        StringBuffer boardLine = new StringBuffer("[");
+        System.out.println("new board line: " + boardLine);
+        for (Point p : grid) {
+            if (p.x != col) {
+                // End of a line
+                System.out.println(boardLine);
+                dataWriter.println(boardLine);
+                dataWriter.flush();
+                boardLine = new StringBuffer("[");
+            }
+            else {
+              boardLine = boardLine.append(p.value + " ");
+              System.out.println(boardLine);
+            }
+        }
+        dataWriter.flush();
     }
 
     void play() {
@@ -550,6 +581,12 @@ public class Offset
         String group0 = null;
         String group1 = null;
         String output = null;
+        String pqDataFile = null;
+        // extra params for running games to generate ML data
+        int group0p = 0;
+        int group0q = 0;
+        int group1p = 0;
+        int group1q = 0;
         int d = 0;
         if (args.length > 0)
              d = Integer.parseInt(args[0]);
@@ -559,33 +596,68 @@ public class Offset
             group1 = args[2];
         if (args.length >3)
         	output = args[3];
-        
-        // create game
-       
-		writer = new PrintWriter(output, "UTF-8");
-        Offset game = new Offset();
-        game.init();
-        //p0 = new Pair(3, 4);
-        //p1 = new Pair(2, 5);
-        p0=randomPair(d);
-        p1=randomPair(d);
-        while (p0.p==p1.p || p0.q == p1.p) {
-        	p1=randomPair(d);
+        if (args.length > 4)
+          group0p = Integer.parseInt(args[4]);
+        if (args.length > 5)
+          group0q = Integer.parseInt(args[5]);
+        if (args.length > 6)
+          group1p = Integer.parseInt(args[6]);
+        if (args.length > 7)
+          group1q = Integer.parseInt(args[7]); 
+        if (args.length > 8) {
+          pqDataFile = args[8];
+          MLMode = true;
+          gui = false;
         }
-        System.out.printf("Pair 1 is (%d, %d)", p0.p, p0.q);
-        System.out.printf("Pair 2 is (%d, %d)", p1.p, p1.q);
-        player0 = loadPlayer(group0, p0, 0);
-        player1 = loadPlayer(group1, p1, 1);
-        // init game
-        
-        // play game
-        //if (gui) {
-            game.playgui();
-       // }
-       // else {
-         //   game.play();
-       // }
-       
+
+        boolean paramsValid = true;
+        // If we're trying to run this in the ML format
+        if (MLMode) {
+          // Make sure given ps and qs are valid
+          if (group0p + group0q != d ||
+            group1p + group1q != d) {
+              paramsValid = false;
+              System.out.println("Ps and Qs don't sum to d");
+            }
+          else if (group0p == group1p || group0q == group1p) {
+            paramsValid = false;
+            System.out.println("Ps and Qs are equivalent");
+          }
+        }
+
+        if (paramsValid) {
+
+            // create game
+           
+            writer = new PrintWriter(output, "UTF-8");
+            dataWriter = new PrintWriter(pqDataFile, "UTF-8");
+            Offset game = new Offset();
+            game.init();
+            if (MLMode) {
+              p0 = new Pair(group0p, group0q);
+              p1 = new Pair(group1p, group1q);
+            }
+            else {
+              p0=randomPair(d);
+              p1=randomPair(d);
+              while (p0.p==p1.p || p0.q == p1.p) {
+                p1=randomPair(d);
+              }
+            }
+            System.out.printf("Pair 1 is (%d, %d)", p0.p, p0.q);
+            System.out.printf("Pair 2 is (%d, %d)", p1.p, p1.q);
+            player0 = loadPlayer(group0, p0, 0);
+            player1 = loadPlayer(group1, p1, 1);
+            // init game
+            
+            // play game
+            if (gui) {
+                game.playgui();
+            }
+            else {
+                game.play();
+            }
+       } 
     }        
 
     int tick = 0;
